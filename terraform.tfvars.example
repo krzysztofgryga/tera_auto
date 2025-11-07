@@ -1,0 +1,98 @@
+# Organization Configuration
+organization_name          = "MyOrganization"
+root_management_group_name = "MyOrg-Root"
+
+# Azure Region
+location = "westeurope"
+
+# Resource Groups
+network_resource_group_name         = "rg-network-hub"
+security_resource_group_name        = "rg-security"
+shared_services_resource_group_name = "rg-shared-services"
+
+# Hub Network Configuration
+hub_vnet_config = {
+  name          = "vnet-hub-prod"
+  address_space = ["10.0.0.0/16"]
+  subnets = {
+    AzureFirewallSubnet = {
+      address_prefix = "10.0.1.0/24"
+    }
+    GatewaySubnet = {
+      address_prefix = "10.0.2.0/24"
+    }
+    AzureBastionSubnet = {
+      address_prefix = "10.0.3.0/24"
+    }
+    SharedServices = {
+      address_prefix    = "10.0.4.0/24"
+      service_endpoints = ["Microsoft.Storage", "Microsoft.KeyVault"]
+    }
+  }
+}
+
+# Spoke Networks Configuration
+spoke_vnets = {
+  production = {
+    name          = "vnet-spoke-prod"
+    address_space = ["10.1.0.0/16"]
+    subnets = {
+      web = {
+        address_prefix    = "10.1.1.0/24"
+        service_endpoints = ["Microsoft.Sql"]
+      }
+      app = {
+        address_prefix    = "10.1.2.0/24"
+        service_endpoints = ["Microsoft.Storage"]
+      }
+      data = {
+        address_prefix    = "10.1.3.0/24"
+        service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"]
+      }
+    }
+  }
+  development = {
+    name          = "vnet-spoke-dev"
+    address_space = ["10.2.0.0/16"]
+    subnets = {
+      web = {
+        address_prefix = "10.2.1.0/24"
+      }
+      app = {
+        address_prefix = "10.2.2.0/24"
+      }
+      data = {
+        address_prefix = "10.2.3.0/24"
+      }
+    }
+  }
+}
+
+# Security and Monitoring
+log_analytics_retention_days = 30
+enable_security_center       = true
+security_center_tier         = "Standard"
+
+# Key Vault
+key_vault_config = {
+  name                       = "kv-shared-001"
+  sku_name                   = "standard"
+  soft_delete_retention_days = 90
+  purge_protection_enabled   = true
+}
+
+# RBAC Assignments (example)
+# rbac_assignments = {
+#   "reader-group" = {
+#     role_definition_name = "Reader"
+#     principal_id         = "00000000-0000-0000-0000-000000000000"
+#   }
+# }
+
+# Tags
+tags = {
+  Environment = "Production"
+  ManagedBy   = "Terraform"
+  Project     = "Azure-Landing-Zone"
+  Owner       = "Platform-Team"
+}
